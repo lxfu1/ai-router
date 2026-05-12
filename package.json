@@ -1,0 +1,44 @@
+{
+  "name": "ai-router",
+  "version": "1.0.0",
+  "description": "AI 大模型 API 中转站，兼容 OpenAI API 格式",
+  "author": "ai-router contributors",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lxfu1/ai-router.git"
+  },
+  "keywords": [
+    "ai",
+    "api-gateway",
+    "openai",
+    "deepseek",
+    "glm",
+    "qwen",
+    "vector-ai"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@antv/g2": "^5.2.0",
+    "better-sqlite3": "^11.9.0",
+    "next": "^15.3.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^22.15.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@types/uuid": "^10.0.0",
+    "typescript": "^5.8.0"
+  }
+}
