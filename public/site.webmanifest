@@ -1,0 +1,14 @@
+{
+  "name": "AI Router",
+  "short_name": "AI Router",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "theme_color": "#667eea",
+  "background_color": "#ffffff",
+  "display": "standalone"
+}

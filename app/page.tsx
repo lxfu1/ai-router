@@ -16,10 +16,25 @@ const svgProps = {
   strokeLinejoin: 'round' as const
 };
 
-const SparklesIcon = () => (
-  <svg {...svgProps}>
-    <path d='M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3z' />
-    <path d='M6 16l.5 1.5L8 18l-1.5.5L6 20l-.5-1.5L4 18l1.5-.5L6 16z' />
+const LogoIcon = () => (
+  <svg {...svgProps} width="36" height="36" viewBox="0 0 100 100">
+    <defs>
+      <linearGradient id="hero-logo-m" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#667eea"/>
+        <stop offset="100%" stopColor="#764ba2"/>
+      </linearGradient>
+      <linearGradient id="hero-logo-a" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="#4facfe"/>
+        <stop offset="100%" stopColor="#00f2fe"/>
+      </linearGradient>
+    </defs>
+    <rect width="100" height="100" rx="20" fill="url(#hero-logo-m)"/>
+    <circle cx="50" cy="50" r="15" fill="white"/>
+    <circle cx="50" cy="50" r="8" fill="url(#hero-logo-a)"/>
+    <circle cx="50" cy="22" r="5" fill="white"/>
+    <circle cx="26" cy="70" r="5" fill="white"/>
+    <circle cx="74" cy="70" r="5" fill="white"/>
+    <path d="M50 35 L50 27 M38 58 L30 67 M62 58 L70 67" stroke="white" strokeWidth="3" strokeLinecap="round"/>
   </svg>
 );
 
@@ -89,7 +104,7 @@ const models = [
     modelId: 'deepseek-v4',
     rate: 'x1.0',
     feature: '1M tokens 上下文',
-    icon: <SparklesIcon />,
+    icon: <LogoIcon />,
     colorClass: 'model-card-accent-purple'
   },
   {
@@ -163,7 +178,27 @@ export default function LandingPage() {
     <div className='landing'>
       <nav className='landing-nav'>
         <div className='landing-nav-brand'>
-          <div className='landing-nav-logo'>R</div>
+          <div className='landing-nav-logo'>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="32" height="32">
+              <defs>
+                <linearGradient id="nav-logo-m" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#667eea"/>
+                  <stop offset="100%" stopColor="#764ba2"/>
+                </linearGradient>
+                <linearGradient id="nav-logo-a" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="#4facfe"/>
+                  <stop offset="100%" stopColor="#00f2fe"/>
+                </linearGradient>
+              </defs>
+              <rect width="100" height="100" rx="20" fill="url(#nav-logo-m)"/>
+              <circle cx="50" cy="50" r="15" fill="white"/>
+              <circle cx="50" cy="50" r="8" fill="url(#nav-logo-a)"/>
+              <circle cx="50" cy="22" r="5" fill="white"/>
+              <circle cx="26" cy="70" r="5" fill="white"/>
+              <circle cx="74" cy="70" r="5" fill="white"/>
+              <path d="M50 35 L50 27 M38 58 L30 67 M62 58 L70 67" stroke="white" strokeWidth="3" strokeLinecap="round"/>
+            </svg>
+          </div>
           <span className='landing-nav-name'>AI Router</span>
           <span className='landing-nav-tag'>v1.0</span>
         </div>

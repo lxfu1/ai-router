@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <!-- 亮色主题渐变 -->
+    <linearGradient id="m-light" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#667eea"/>
+      <stop offset="100%" stop-color="#764ba2"/>
+    </linearGradient>
+    <linearGradient id="a-light" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#4facfe"/>
+      <stop offset="100%" stop-color="#00f2fe"/>
+    </linearGradient>
+    
+    <!-- 暗色主题渐变 -->
+    <linearGradient id="m-dark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#a78bfa"/>
+    </linearGradient>
+    <linearGradient id="a-dark" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="100%" stop-color="#67e8f9"/>
+    </linearGradient>
+  </defs>
+  
+  <style>
+    @media (prefers-color-scheme: dark) {
+      .bg-rect { fill: url(#m-dark) !important; }
+      .center-circle { fill: url(#a-dark) !important; }
+    }
+  </style>
+  
+  <!-- 背景 -->
+  <rect class="bg-rect" width="100" height="100" rx="20" fill="url(#m-light)"/>
+  
+  <!-- 中心圆 -->
+  <circle cx="50" cy="50" r="15" fill="white"/>
+  <circle class="center-circle" cx="50" cy="50" r="8" fill="url(#a-light)"/>
+  
+  <!-- 连接点 -->
+  <circle cx="50" cy="22" r="5" fill="white"/>
+  <circle cx="26" cy="70" r="5" fill="white"/>
+  <circle cx="74" cy="70" r="5" fill="white"/>
+  
+  <!-- 连接线 -->
+  <path d="M50 35 L50 27 M38 58 L30 67 M62 58 L70 67" 
+        stroke="white" stroke-width="3" stroke-linecap="round"/>
+</svg>

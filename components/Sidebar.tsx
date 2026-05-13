@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import Logo from './Logo'
 
 const navItems = [
   { href: '/dashboard', label: '仪表盘', icon: (
@@ -58,7 +59,9 @@ export default function Sidebar({ mobileOpen = false, onClose }: SidebarProps) {
         onClick={handleNavClick}
         style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}
       >
-        <div className="sidebar-logo-icon">R</div>
+        <div className="sidebar-logo-icon">
+          <Logo size={36} idPrefix="sidebar-logo" />
+        </div>
         <div className="sidebar-logo-text">
           <h1>AI Router</h1>
           <p>智能模型中转站</p>

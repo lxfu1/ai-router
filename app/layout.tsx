@@ -5,21 +5,26 @@ export const metadata: Metadata = {
   title: 'AI Router - 智能模型中转站',
   description: '兼容 OpenAI API 的多模型智能路由中转站',
   icons: {
-    icon: '/icon.svg',
+    icon: '/favicon.svg?v=2',
+    shortcut: '/favicon.svg?v=2',
+    apple: '/apple-touch-icon.svg?v=2',
   },
 }
 
-// 预加载关键资源（DNS、connect）
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#667eea' },
+    { media: '(prefers-color-scheme: dark)', color: '#1a1a2e' },
+  ],
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="zh-CN">
       <head>
-        {/* 预连接到 API 端点，减少第一次请求的延迟 */}
+        {/* 预连接到 API 端点 */}
         <link rel="preconnect" href="/api" crossOrigin="anonymous" />
       </head>
       <body>
