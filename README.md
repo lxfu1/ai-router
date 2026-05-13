@@ -5,8 +5,10 @@
 </p>
 
 <p align="center">
-  一个简易但完整的 AI 大模型 API 中转站，兼容 OpenAI API 格式，支持多模型路由和管理后台。
+  <strong>AI Router</strong> - 开源的 LLM API 网关 / OpenAI API 代理 / 大模型负载均衡器
 </p>
+
+<p align="center">AI API Gateway · OpenAI Compatible Proxy · Multi-Model Router · 智谱/通义/DeepSeek 统一接入</p>
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>

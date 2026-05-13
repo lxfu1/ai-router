@@ -9,13 +9,12 @@
     "url": "git+https://github.com/lxfu1/ai-router.git"
   },
   "keywords": [
-    "ai",
-    "api-gateway",
-    "openai",
-    "deepseek",
-    "glm",
-    "qwen",
-    "vector-ai"
+    "ai-router",
+    "llm-gateway",
+    "openai-proxy",
+    "deepseek-api",
+    "load-balancer",
+    "api-management"
   ],
   "engines": {
     "node": ">=18.0.0"
