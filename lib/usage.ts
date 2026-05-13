@@ -35,11 +35,19 @@ export function getLogs(params: LogQueryParams): { logs: RequestLog[]; total: nu
 }
 
 export function getStats(): UsageStats {
-  const today = new Date().toISOString().split('T')[0]
-  const thirtyDaysAgo = new Date(Date.now() - 30 * 86400000).toISOString().split('T')[0]
+  // 使用本地时区获取今天的日期（解决时区问题）
+  const now = new Date()
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString().split('T')[0]
+  
+  // 计算30天前的日期
+  const thirtyDaysAgoDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 30)
+  const thirtyDaysAgo = thirtyDaysAgoDate.toISOString().split('T')[0]
 
   const totalRequests = (db.prepare('SELECT COUNT(*) as c FROM request_logs').get() as { c: number }).c
-  const todayRequests = (db.prepare('SELECT COUNT(*) as c FROM request_logs WHERE created_at >= ?').get(today) as { c: number }).c
+  // 今日统计使用 datetime 比较，避免隐式转换
+  const todayRequests = (db.prepare(
+    "SELECT COUNT(*) as c FROM request_logs WHERE created_at >= datetime(?, 'start of day')"
+  ).get(today) as { c: number }).c
   const totalTokens = (db.prepare('SELECT COALESCE(SUM(total_tokens), 0) as s FROM request_logs').get() as { s: number }).s
   const totalCost = (db.prepare('SELECT COALESCE(SUM(cost), 0) as s FROM request_logs').get() as { s: number }).s
   const totalKeys = (db.prepare('SELECT COUNT(*) as c FROM api_keys').get() as { c: number }).c
@@ -81,10 +89,23 @@ export function getStats(): UsageStats {
   }
   const modelStats = Array.from(modelMap.values()).sort((a, b) => b.count - a.count)
 
-  const dailyStats = db.prepare(`
+  // 填充缺失日期，确保30天连续
+  const rawDailyStats = db.prepare(`
     SELECT DATE(created_at) as date, COUNT(*) as count, SUM(total_tokens) as tokens, SUM(cost) as cost
-    FROM request_logs WHERE created_at >= ? GROUP BY DATE(created_at) ORDER BY date
+    FROM request_logs WHERE created_at >= datetime(?, 'start of day') 
+    GROUP BY DATE(created_at) ORDER BY date
   `).all(thirtyDaysAgo) as { date: string; count: number; tokens: number; cost: number }[]
+  
+  // 补充缺失的日期为0
+  const dailyStats: { date: string; count: number; tokens: number; cost: number }[] = []
+  const statMap = new Map(rawDailyStats.map(s => [s.date, s]))
+  
+  for (let i = 0; i <= 30; i++) {
+    const d = new Date(thirtyDaysAgoDate.getFullYear(), thirtyDaysAgoDate.getMonth(), thirtyDaysAgoDate.getDate() + i)
+    const dateStr = d.toISOString().split('T')[0]
+    const stat = statMap.get(dateStr)
+    dailyStats.push(stat || { date: dateStr, count: 0, tokens: 0, cost: 0 })
+  }
 
   return {
     totalRequests, todayRequests, totalTokens, totalCost,
