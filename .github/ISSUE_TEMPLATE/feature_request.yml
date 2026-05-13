@@ -1,0 +1,44 @@
+name: 功能请求
+description: 为这个项目提出新功能建议
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 你的需求
+      description: 清晰简洁地描述你的使用场景和痛点
+      placeholder: 我在使用 ai-router 时遇到了...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: 建议方案
+      description: 你期望的解决方案是什么？
+      placeholder: 希望增加 XXX 功能，可以...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 替代方案
+      description: 你考虑过哪些替代方案？
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 优先级
+      options:
+        - 低 - 有最好，没有也行
+        - 中 - 比较期待
+        - 高 - 必需功能
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: 补充信息
+      description: 其他上下文或截图

@@ -9,4 +9,72 @@ services:
       - .env.local
     volumes:
       - ./data:/app/data
+    environment:
+      - DATABASE_TYPE=${DATABASE_TYPE:-sqlite}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
+      - NODE_ENV=${NODE_ENV:-production}
     restart: unless-stopped
+    depends_on:
+      redis:
+        condition: service_healthy
+        required: false
+    networks:
+      - ai-router
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '1.0'
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 15s
+      retries: 3
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    networks:
+      - ai-router
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+
+  # PostgreSQL（可选，当 DATABASE_TYPE=postgres 时使用）
+  # postgres:
+  #   image: postgres:16-alpine
+  #   ports:
+  #     - "5432:5432"
+  #   environment:
+  #     POSTGRES_DB: ai_router
+  #     POSTGRES_USER: ai_router
+  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+  #   volumes:
+  #     - pg-data:/var/lib/postgresql/data
+  #   restart: unless-stopped
+  #   networks:
+  #     - ai-router
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U ai_router"]
+  #     interval: 10s
+  #     timeout: 3s
+  #     retries: 3
+
+volumes:
+  redis-data:
+  # pg-data:
+
+networks:
+  ai-router:
+    driver: bridge

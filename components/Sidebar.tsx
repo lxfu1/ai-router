@@ -1,6 +1,7 @@
 'use client'
 
-import { usePathname, useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 const navItems = [
   { href: '/dashboard', label: '仪表盘', icon: (
@@ -17,34 +18,72 @@ const navItems = [
   )},
 ]
 
-export default function Sidebar() {
+interface SidebarProps {
+  mobileOpen?: boolean
+  onClose?: () => void
+}
+
+export default function Sidebar({ mobileOpen = false, onClose }: SidebarProps) {
   const pathname = usePathname()
-  const router = useRouter()
+
+  const handleLogout = () => {
+    localStorage.removeItem('admin_token')
+    window.location.href = '/'
+  }
+
+  const handleNavClick = () => {
+    // Close mobile sidebar on navigation
+    if (mobileOpen && onClose) onClose()
+  }
 
   return (
-    <aside className="sidebar">
-      <div className="sidebar-logo" onClick={() => router.push('/dashboard')} style={{ cursor: 'pointer' }}>
+    <aside className={`sidebar${mobileOpen ? ' mobile-open' : ''}`}>
+      {/* Mobile close button */}
+      <div className="sidebar-mobile-close">
+        <button
+          onClick={onClose}
+          className="mobile-menu-btn"
+          aria-label="关闭菜单"
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <Link
+        href="/dashboard"
+        className="sidebar-logo"
+        onClick={handleNavClick}
+        style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}
+      >
         <div className="sidebar-logo-icon">R</div>
         <div className="sidebar-logo-text">
           <h1>AI Router</h1>
           <p>智能模型中转站</p>
         </div>
-      </div>
+      </Link>
       <nav className="sidebar-nav">
         <div className="sidebar-section-label">导航</div>
         {navItems.map(item => (
-          <button
+          <Link
             key={item.href}
+            href={item.href}
             className={`sidebar-link ${pathname === item.href ? 'active' : ''}`}
-            onClick={() => router.push(item.href)}
+            onClick={handleNavClick}
           >
             {item.icon}
             {item.label}
-          </button>
+          </Link>
         ))}
       </nav>
       <div className="sidebar-footer">
-        <button className="sidebar-logout" onClick={() => { localStorage.removeItem('admin_token'); router.push('/login') }}>
+        <Link href="/" className="sidebar-home-link" onClick={handleNavClick}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="16" height="16"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          返回首页
+        </Link>
+        <button className="sidebar-logout" onClick={handleLogout}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="16" height="16"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
           退出登录
         </button>

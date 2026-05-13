@@ -5,6 +5,11 @@ export const dynamic = 'force-dynamic';
 import { checkAdminAuth } from '@/lib/auth';
 import { checkAllChannels, getAllChannels } from '@/lib/channels';
 import { AuthError, createErrorResponse } from '@/lib/errors';
+import { logAudit } from '@/lib/audit';
+import { getClientIp } from '@/lib/rate-limit';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('Admin:Health');
 
 /**
  * GET /api/admin/health
@@ -33,7 +38,16 @@ export async function POST(request: NextRequest) {
       throw new AuthError();
     }
 
+    const ip = getClientIp(request);
     const results = await checkAllChannels();
+    logAudit({
+      action: 'channel_health_check',
+      actor: 'admin',
+      resource_type: 'channel',
+      detail: `Manual health check triggered, ${results.length} channels checked`,
+      ip_address: ip,
+    });
+    logger.info('Manual health check completed', { channelCount: results.length, ip });
     return Response.json({
       channels: results.map((r) => ({
         id: r.channel.id,

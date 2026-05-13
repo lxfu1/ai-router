@@ -12,6 +12,11 @@ import {
 } from '@/lib/keys';
 import { AuthError, ValidationError, createErrorResponse } from '@/lib/errors';
 import { validateKeyInput, validateId } from '@/lib/validator';
+import { logAudit } from '@/lib/audit';
+import { getClientIp } from '@/lib/rate-limit';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('Admin:Keys');
 
 /**
  * GET /api/admin/keys
@@ -54,6 +59,16 @@ export async function POST(request: NextRequest) {
 
     const { name, balance } = validation.data!;
     const key = createKey(name, balance ?? 100);
+    const ip = getClientIp(request);
+    logAudit({
+      action: 'key_create',
+      actor: 'admin',
+      resource_type: 'api_key',
+      resource_id: key.id,
+      detail: `Created key: ${name}, balance: ${balance ?? 100}`,
+      ip_address: ip,
+    });
+    logger.info('API key created', { keyId: key.id, name, ip });
     return Response.json({ key }, { status: 201 });
   } catch (error) {
     return createErrorResponse(error);
@@ -85,6 +100,7 @@ export async function PUT(request: NextRequest) {
     const id = idValidation.data!;
 
     const action = String(b.action || '');
+    const ip = getClientIp(request);
 
     if (action === 'toggle') {
       const keys = getAllKeys();
@@ -93,12 +109,30 @@ export async function PUT(request: NextRequest) {
         throw new ValidationError('Key not found');
       }
       toggleKey(id, key.enabled === 0);
+      logAudit({
+        action: 'key_toggle',
+        actor: 'admin',
+        resource_type: 'api_key',
+        resource_id: id,
+        detail: `Key ${key.name} ${key.enabled === 0 ? 'enabled' : 'disabled'}`,
+        ip_address: ip,
+      });
+      logger.info('API key toggled', { keyId: id, enabled: key.enabled === 0, ip });
     } else if (action === 'balance') {
       const balance = Number(b.balance);
       if (isNaN(balance) || balance < 0) {
         throw new ValidationError('balance must be a non-negative number');
       }
       updateKeyBalance(id, balance);
+      logAudit({
+        action: 'key_balance_update',
+        actor: 'admin',
+        resource_type: 'api_key',
+        resource_id: id,
+        detail: `Balance updated to ${balance}`,
+        ip_address: ip,
+      });
+      logger.info('API key balance updated', { keyId: id, balance, ip });
     } else {
       throw new ValidationError('Invalid action. Use: toggle | balance');
     }
@@ -133,6 +167,16 @@ export async function DELETE(request: NextRequest) {
     }
 
     deleteKey(idValidation.data!);
+    const ip = getClientIp(request);
+    logAudit({
+      action: 'key_delete',
+      actor: 'admin',
+      resource_type: 'api_key',
+      resource_id: idValidation.data!,
+      detail: 'Key deleted',
+      ip_address: ip,
+    });
+    logger.info('API key deleted', { keyId: idValidation.data!, ip });
     return Response.json({ success: true });
   } catch (error) {
     return createErrorResponse(error);

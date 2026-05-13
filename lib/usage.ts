@@ -48,11 +48,38 @@ export function getStats(): UsageStats {
     ? (db.prepare("SELECT COUNT(*) as c FROM request_logs WHERE status = 'error'").get() as { c: number }).c / totalRequests
     : 0
 
-  const modelStats = db.prepare(`
-    SELECT model, COUNT(*) as count, SUM(total_tokens) as tokens, SUM(cost) as cost,
-           AVG(latency_ms) as avg_latency
-    FROM request_logs GROUP BY model ORDER BY count DESC
+  // 模型统计：按实际渠道模型名分组（而不是用户请求的 model 别名）
+  // 通过 channel_id 关联 channels 表获取真实模型名
+  const rawModelStats = db.prepare(`
+    SELECT 
+      COALESCE(c.model_name, r.model) as model, 
+      COUNT(*) as count, 
+      SUM(r.total_tokens) as tokens, 
+      SUM(r.cost) as cost,
+      AVG(r.latency_ms) as avg_latency
+    FROM request_logs r
+    LEFT JOIN channels c ON r.channel_id = c.id
+    GROUP BY COALESCE(c.model_name, r.model)
+    ORDER BY count DESC
   `).all() as { model: string; count: number; tokens: number; cost: number; avg_latency: number }[]
+
+  // 合并大小写不一致的模型名
+  const modelMap = new Map<string, { model: string; count: number; tokens: number; cost: number; avg_latency: number }>()
+  for (const stat of rawModelStats) {
+    // 统一转小写对比，但保留首次出现的显示名称
+    const key = stat.model.toLowerCase()
+    const existing = modelMap.get(key)
+    if (existing) {
+      existing.count += stat.count
+      existing.tokens += stat.tokens
+      existing.cost += stat.cost
+      // 加权平均延迟
+      existing.avg_latency = (existing.avg_latency * existing.count + stat.avg_latency * stat.count) / (existing.count + stat.count)
+    } else {
+      modelMap.set(key, { ...stat })
+    }
+  }
+  const modelStats = Array.from(modelMap.values()).sort((a, b) => b.count - a.count)
 
   const dailyStats = db.prepare(`
     SELECT DATE(created_at) as date, COUNT(*) as count, SUM(total_tokens) as tokens, SUM(cost) as cost

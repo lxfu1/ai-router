@@ -133,3 +133,15 @@ export interface JwtPayload {
   exp?: number
   [key: string]: unknown
 }
+
+// Audit Log
+export interface AuditLog {
+  id: number
+  action: string
+  actor: string
+  resource_type: string
+  resource_id: string | null
+  detail: string | null
+  ip_address: string | null
+  created_at: string
+}

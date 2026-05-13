@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 提问
+    url: https://github.com/lxfu1/ai-router/discussions
+    about: 有问题？在 Discussions 中提问
+  - name: 文档
+    url: https://github.com/lxfu1/ai-router#readme
+    about: 查看项目文档
